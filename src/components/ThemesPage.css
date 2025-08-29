@@ -1,0 +1,92 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Header con logo y botón de regresar */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 190px;
+    gap: 80%;
+}
+
+header .logo {
+    width: 300px;  
+}
+
+header .regresar {
+    width: 50px;
+    cursor: pointer;
+}
+
+/* Fondo general */
+body {
+  margin: 0;
+  font-family: "Comic Sans MS", "Poppins", cursive, sans-serif;
+  background: #fff;
+  height: 100vh;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ccc' stroke-width='0.5'%3E%3Cpath d='M0 0h40v40H0z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 40px 40px;
+}
+
+.themes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 40px;
+}
+
+.themes-container h2 {
+    font-size: 75px;
+    font-weight: bold;
+    margin-bottom: 35px;
+    color: #333333;
+}
+
+.themes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 280px);
+    grid-gap: 200px;
+    row-gap: 100px;
+
+}
+
+/* Botones de tema */
+.theme-card {
+    width: 300px;
+    height: 180px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 40px;
+    font-weight: bold;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: #caa7f8; /* lila */
+}
+
+/* Colores de los botones */
+#consonants-button {
+    background-color: #caa7f8; /* lila */
+}
+
+#vowels-button {
+    background-color: #fced75; /* amarillo */
+}
+
+#name-button {
+    background-color: #f69ad7; /* rosa */
+}
+
+/* Hover */
+.theme-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+}

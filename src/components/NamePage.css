@@ -1,0 +1,77 @@
+/* Fondo cuadriculado estilo inicio */
+body {
+  background-color: #fff;
+  background-image: linear-gradient(#eee 1px, transparent 1px),
+                    linear-gradient(90deg, #eee 1px, transparent 1px);
+  background-size: 40px 40px;
+  font-family: 'Comic Sans MS', 'Poppins', sans-serif;
+  margin: 0;
+  height: 100vh;
+
+  /* centrado total */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor principal */
+.name-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+  height: 100vh;
+}
+
+/* Título */
+.name-container h2 {
+  font-size: 2.2rem;
+  color: #ff69b4;
+  margin-bottom: 15px;
+}
+
+/* Subtítulo */
+.name-container p {
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+/* Input de nombre */
+.name-container input {
+  padding: 18px;
+  font-size: 1.3rem;
+  width: 320px; /* más ancho */
+  border: 3px solid #ffb6d9;
+  border-radius: 15px;
+  outline: none;
+  margin-bottom: 25px;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+  text-align: center;
+}
+
+.name-container input:focus {
+  border-color: #ff69b4;
+  box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+}
+
+/* Botón */
+.name-container button {
+  display: block;
+  margin: 0 auto;
+  padding: 16px 35px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #c6a7f2, #f58eb8);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.name-container button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.25);
+}

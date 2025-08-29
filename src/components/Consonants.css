@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#root {
+    height: 100vh; /* Para que ocupe toda la altura de la pantalla */
+    width: 100%;
+}
+
+.alphabet-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 40px;
+}
+
+.alphabet-container h2 {
+    font-size: 75px;
+    font-weight: bold;
+    margin-bottom: 35px;
+    color: #333333;
+}
+
+.alphabet-container h3 {
+    font-size: 75px;
+    font-weight: bold;
+    margin-bottom: 35px;
+    color: #333333;
+}
+
+.alphabet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 280px);
+    grid-gap: 200px;
+    row-gap: 100px;
+
+}

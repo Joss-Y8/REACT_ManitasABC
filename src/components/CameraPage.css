@@ -1,0 +1,73 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    font-family: "Comic Sans MS", "Poppins", cursive, sans-serif;
+    background: #fff;
+    height: 100vh;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ccc' stroke-width='0.5'%3E%3Cpath d='M0 0h40v40H0z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 40px 40px;
+}
+
+header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 190px;
+    gap: 60%;
+}
+
+header .logo{
+    width: 350px;
+}
+
+header .regresar{
+    width: 50px;
+    cursor: pointer;
+}
+
+.camera{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-feed{
+    border-radius: 15px;
+}
+
+.camera-container p{
+    text-align: center;
+    background-color: #dca7f7;
+    border-radius: 10px;
+    margin: 10px 70px;
+    padding: 20px;
+    color: #fff;
+}
+
+.camera-container h2{
+    text-align: center;
+    border-radius: 10px;
+    margin: 10px 70px;
+    padding: 20px;
+    color: #0c0000;
+    font-size: 45px;
+
+}
+
+.cam-cont{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+}
+.column{
+    display: flex;
+    flex-direction: column;
+}
