@@ -4,33 +4,28 @@
     padding: 0;
     box-sizing: border-box;
 }
-/* Header con logo y botón de regresar */
+
 header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 190px;
-    gap: 80%;
+  width: 100%;
+  /*background-color: #1f2036;*/
+  padding: 0.1rem 0.1rem; 
+  margin: 0;
+  display: flex;
+  align-items: center !important;
+  justify-content: space-between;
 }
 
 header .logo {
-    width: 300px;  
+  /* Le da un tamaño fijo al logo */
+  width: 150px;
+  height: auto;
 }
 
 header .regresar {
-    width: 50px;
-    cursor: pointer;
-}
-
-/* Fondo general */
-body {
-  margin: 0;
-  font-family: "Comic Sans MS", "Poppins", cursive, sans-serif;
-  background: #fff;
-  height: 100vh;
-  background-image: linear-gradient(to right, rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
-                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23ccc' stroke-width='0.5'%3E%3Cpath d='M0 0h40v40H0z'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 40px 40px;
+  /* Le da un tamaño más pequeño a la flecha */
+  width: 30px !important;
+  height: 30px !important;
+  cursor: pointer;
 }
 
 .themes-container {
@@ -49,7 +44,7 @@ body {
 
 .themes-grid {
     display: grid;
-    grid-template-columns: repeat(2, 280px);
+    grid-template-columns: repeat(3, 280px);
     grid-gap: 200px;
     row-gap: 100px;
 

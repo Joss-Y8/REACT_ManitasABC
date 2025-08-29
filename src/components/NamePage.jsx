@@ -19,13 +19,15 @@ function NamePage({onNameSubmit, onGoBack}) {
     }; 
     
   return (
-    <div className="name-container">
+    <div className="name">
       <Header onBackClick={handleBack}/>
+      <div className="name-container">
         <h2>Escribe tu nombre</h2>
         <p>¡Pide ayuda a un adulto si lo necesitas!</p>
         <input type="text" value={name} onChange={handleChange} placeholder="Escribe aquí tu nombre"/>
         <button onClick={handleSubmit}>¡Comienza a deletrear!</button>
-    </div>
+      </div>
+    </div>    
   );
 }
 

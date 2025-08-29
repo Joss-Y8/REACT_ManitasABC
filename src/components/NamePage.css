@@ -20,12 +20,12 @@ body {
   flex-direction: column;
   justify-content: center; 
   align-items: center; 
-  height: 100vh;
+  /*height: 100vh;*/
 }
 
 /* Título */
 .name-container h2 {
-  font-size: 2.2rem;
+  font-size: 75px;
   color: #ff69b4;
   margin-bottom: 15px;
 }

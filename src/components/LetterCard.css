@@ -5,67 +5,94 @@
     border: none;
     border-radius: 30px;
     cursor: pointer;
-    font-size: 40px;
+    font-size: 35px;
     font-weight: bold;
     color: #333333;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
 }
 .letter-card img {
-    width: 200px;
-    height: 200px;
+    width: 225px;
+    height: 225px;
     object-fit: contain;
-    margin-bottom: 10px;
-    padding: 8px;
+    margin-bottom: 15px;
+    padding: 5px;
     border-radius: 10px;
  }
         
 
 /* Aplicar colores según la letra */
 .letter-card[data-letter="A"],
-.letter-card[data-letter="E"],
-.letter-card[data-letter="I"],
-.letter-card[data-letter="M"],
+.letter-card[data-letter="U"],
+.letter-card[data-letter="B"],
+.letter-card[data-letter="G"],
+.letter-card[data-letter="L"],
 .letter-card[data-letter="P"],
 .letter-card[data-letter="T"],
-.letter-card[data-letter="X"] {
-    background-color: #caa7f8; /* amarillo para vocales */
-}
-
-.letter-card[data-letter="B"],
-.letter-card[data-letter="F"],
-.letter-card[data-letter="J"],
-.letter-card[data-letter="N"],
-.letter-card[data-letter="Q"],
-.letter-card[data-letter="U"],
-.letter-card[data-letter="Y"] {
+.letter-card[data-letter="Y"]  {
     background-color: #f69ad7; /* amarillo para vocales */
 }
 
+.letter-card[data-letter="E"],
 .letter-card[data-letter="C"],
-.letter-card[data-letter="G"],
-.letter-card[data-letter="K"],
-.letter-card[data-letter="Ñ"],
-.letter-card[data-letter="R"],
+.letter-card[data-letter="H"],
+.letter-card[data-letter="M"],
+.letter-card[data-letter="Q"],
 .letter-card[data-letter="V"],
 .letter-card[data-letter="Z"] {
-    background-color: #76d7e8; /* amarillo para vocales */
+    background-color: #caa7f8;/* amarillo para vocales */
 }
 
+.letter-card[data-letter="I"],
 .letter-card[data-letter="D"],
-.letter-card[data-letter="H"],
-.letter-card[data-letter="L"],
-.letter-card[data-letter="O"],
-.letter-card[data-letter="S"],
+.letter-card[data-letter="J"],
+.letter-card[data-letter="N"],
+.letter-card[data-letter="R"],
 .letter-card[data-letter="W"] {
     background-color: #fced75; /* amarillo para vocales */
 }
 
+.letter-card[data-letter="O"],
+.letter-card[data-letter="F"],
+.letter-card[data-letter="K"],
+.letter-card[data-letter="Ñ"],
+.letter-card[data-letter="S"],
+.letter-card[data-letter="X"] {
+    background-color: #76d7e8; /* amarillo para vocales */
+}
+
 
 /* Hover */
-.theme-card:hover {
+.letter-card:hover {
     transform: scale(1.05);
     box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+  .letter-card {
+    width: 120px;
+    height: 180px;
+    font-size: 24px;
+  }
+
+  .letter-card img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .letter-card {
+    width: 100px;
+    height: 150px;
+    font-size: 20px;
+  }
+
+  .letter-card img {
+    width: 60px;
+    height: 60px;
+  }
 }

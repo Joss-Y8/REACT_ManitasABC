@@ -34,11 +34,13 @@ function ConsonantsPage({onLetterSelect, onGoBack}) {
       console.log('Regresar clickeado')
     }; 
   return (
-    <div className="alphabet-container">
+    <div className="alphabet">
       <Header onBackClick={handleBack}/>
-      <h2>Aprende las Consonantes en LSM</h2>
-      <div className="alphabet-grid">
-        {consonantsData.map((item, index)=>(<LetterCard key={index} letter={item.letter} imageURL={item.imageURL} onLetterClick={onLetterSelect}/>))}
+      <div className="alphabet-container">
+        <h2>Aprende las Consonantes en LSM</h2>
+        <div className="alphabet-grid">
+          {consonantsData.map((item, index)=>(<LetterCard key={index} letter={item.letter} imageURL={item.imageURL} onLetterClick={onLetterSelect}/>))}
+        </div>
       </div>
     </div>
   );

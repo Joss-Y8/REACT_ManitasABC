@@ -17,11 +17,13 @@ function VowelsPage({onLetterSelect, onGoBack}) {
       console.log('Regresar clickeado')
     }; 
   return (
-    <div className="alphabet-container">
+    <div className="alphabet">
       <Header onBackClick={handleBack}/>
-      <h2>Aprende las Vocales en LSM</h2>
-      <div className="alphabet-grid">
-        {vowelsData.map((item, index)=>(<LetterCard key={index} letter={item.letter} imageURL={item.imageURL} onLetterClick={onLetterSelect}/>))}
+      <div className="alphabet-container">
+        <h2>Aprende las Vocales en LSM</h2>
+        <div className="alphabet-grid">
+          {vowelsData.map((item, index)=>(<LetterCard key={index} letter={item.letter} imageURL={item.imageURL} onLetterClick={onLetterSelect}/>))}
+        </div>
       </div>
     </div>
   );
