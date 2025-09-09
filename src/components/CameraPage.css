@@ -71,3 +71,12 @@ header .regresar{
     display: flex;
     flex-direction: column;
 }
+
+.letter-image{
+    width: 600px;
+    height: 600px;
+}
+
+/*.image-container{
+    height: 0px;
+}*/
