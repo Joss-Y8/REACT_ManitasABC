@@ -80,3 +80,12 @@ header .regresar{
 /*.image-container{
     height: 0px;
 }*/
+.camera-feed {
+    justify-content: center;
+    align-items: center;
+    /*width: 500px;
+    height: 500px;*/
+    object-fit: cover; /* ajusta el recorte */
+    border-radius: 12px;
+    transform: scaleX(-1); /* para corregir el efecto espejo */
+}
