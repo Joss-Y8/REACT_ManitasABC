@@ -13,7 +13,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
   const [currentLetter, setCurrentLetter] = useState('');
   const [letterImageURL, setLetterImageURL] = useState('');
 
-  // Iniciar cámara normal
+  // Inicio de la cámara
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -29,13 +29,13 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
   useEffect(() => {
     startCamera();
 
-    // --- Configurar MediaPipe Hands ---
+    // --- Configuración de MediaPipe Hands ---
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
 
     hands.setOptions({
-      maxNumHands: 2,
+      maxNumHands: 1, //analizaremos una sola mano.
       modelComplexity: 1,
       minDetectionConfidence: 0.7,
       minTrackingConfidence: 0.7,
@@ -70,7 +70,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
       results.multiHandLandmarks.forEach((landmarks) => {
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
           color: "#c6a7f2", // líneas 
-          lineWidth: 5,
+          lineWidth: 3,
         });
         drawLandmarks(canvasCtx, landmarks, {
           color: "#f58eb8", // puntos en unión
