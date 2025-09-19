@@ -9,14 +9,44 @@ import { HAND_CONNECTIONS } from '@mediapipe/hands';
 function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const cameraRef = useRef(null); 
+  const streamRef = useRef(null);
+  const handsRef = useRef(null); 
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [currentLetter, setCurrentLetter] = useState('');
   const [letterImageURL, setLetterImageURL] = useState('');
+
+  //esta función se creó para detener completamente la cámara 
+  const stopCamera = () => {
+    console.log("Deteniendo camara"); 
+
+    //detemos el stream de la camara 
+    if(streamRef.current){
+      streamRef.current.getTracks().forEach((track)=>{
+        track.stop(); 
+        console.log("Track detenido:", track.kind); 
+      }); 
+      streamRef.current = null; 
+    }
+
+    //detener cámara de MediaPipe 
+    if(cameraRef.current){
+      handsRef.current.onResults(()=>{}); 
+      handsRef.current.close(); 
+      handsRef.current = null; 
+    }
+
+    if(videoRef.current){
+      videoRef.current.srcObject=null; 
+    }
+    setIsCameraOn(false); 
+  }; 
 
   // Inicio de la cámara
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream; //referencia del stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsCameraOn(true);
@@ -27,12 +57,15 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
   };
 
   useEffect(() => {
+    const videoEl = videoRef.current; //congelamos la referencia del video para prevenir riesgos futuros. 
+    let isMounted = true; //bandera
     startCamera();
 
     // --- Configuración de MediaPipe Hands ---
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
+    handsRef.current = hands; //referencia de las manos detectadas
 
     hands.setOptions({
       maxNumHands: 1, //analizaremos una sola mano.
@@ -42,30 +75,25 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
     });
 
     hands.onResults((results) => {
-      const canvasCtx = canvasRef.current.getContext("2d");
+      if(!isMounted) return; //no dibujar
+      const canvas = canvasRef.current; 
+      if(!canvas) return; //evita el error si se cambia de página
+      const canvasCtx = canvas.getContext("2d");
+      if(!canvasCtx) return; //para evitar el error de desmontaje 
+
+      const {width, height} = canvas; //las dimensiones solo se guardan si existen. 
       canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      canvasCtx.clearRect(0, 0, width, height);
 
       // Dibujar la imagen original
       canvasCtx.drawImage(
         results.image,
         0,
         0,
-        canvasRef.current.width,
-        canvasRef.current.height
+        width,
+        height
       );
 
-      // Dibujar landmarks de la mano con puntos
-      /*if (results.multiHandLandmarks) {
-        results.multiHandLandmarks.forEach((landmarks) => {
-          canvasCtx.fillStyle = "pink";
-          landmarks.forEach((point) => {
-            canvasCtx.beginPath();
-            canvasCtx.arc(point.x * canvasRef.current.width, point.y * canvasRef.current.height, 5, 0, 2 * Math.PI);
-            canvasCtx.fill();
-          });
-        });
-      }*/
      if (results.multiHandLandmarks) {
       results.multiHandLandmarks.forEach((landmarks) => {
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
@@ -83,23 +111,34 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
       canvasCtx.restore();
     });
 
-    if (videoRef.current) {
-      const camera = new Camera(videoRef.current, {
+    let camera; 
+    if (videoEl) {
+      camera = new Camera(videoEl, {
         onFrame: async () => {
-          await hands.send({ image: videoRef.current });
+          if(!isMounted) return;
+          await hands.send({ image: videoEl });
         },
         width: 640,
         height: 480,
       });
+      cameraRef.current = camera; //guardamos referencia de la cámara
       camera.start();
     }
 
     // limpiar cámara al desmontar
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const tracks = videoRef.current.srcObject.getTracks();
+      isMounted = false; 
+      //se deben detener los tracks de la cámara 
+      if (videoEl && videoEl.srcObject) {
+        const tracks = videoEl.srcObject.getTracks();
         tracks.forEach((track) => track.stop());
       }
+
+      //se debe detener la cámara de MediaPipe 
+      if(camera){
+        camera.stop(); //evitamos la ejecución onFrame
+      }
+      hands.onResults(()=>{}); //ya no llamamos al código nuevamente. 
     };
   }, []);
 
@@ -118,6 +157,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
   }, [nameToDeleter, selectedLetter]);
 
   const handleBack = () => {
+    stopCamera(); 
     onGoBack();
     console.log('Regresar clickeado');
   };
