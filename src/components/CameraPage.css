@@ -74,7 +74,8 @@ header .regresar{
 
 .letter-image{
     width: 600px;
-    height: 600px;
+    height: 700px;
+    margin-left: 200px;
 }
 
 /*.image-container{
