@@ -257,11 +257,11 @@ export default function useTimedSignPredictor(options = {}) {
     const bigScore = { fontSize:56, margin:"0 0 12px", lineHeight:1.1 };
     const sub = { color:"#555", marginBottom:12 };
     const warn = { background:"#FFF3CD", border:"1px solid #FFECB5", color:"#664D03", padding:"10px 12px", borderRadius:10, marginBottom:12, fontWeight:600 };
-    const errorBox = { background:"#fee", border:"2px solid #fcc", color:"#c00", padding:"20px 16px", borderRadius:12, marginBottom:16, fontWeight:600, fontSize:18 };
+    const errorBox = { background: 'linear-gradient(135deg, #ffe871, #fff2b2ff)', border:"2px solid #ffe871", color:"#ff6600ff", padding:"20px 16px", borderRadius:12, marginBottom:16, fontWeight:600, fontSize:18 };
 
     const dotsWrap = { margin:"14px auto 18px", display:"grid", gridTemplateColumns:"repeat(20,1fr)", gap:6, width:"min(520px,90vw)" };
-    const dot = (active) => ({ width:14, height:14, borderRadius:4, background: active ? "#7c3aed" : "#e5defb", transition:"background .2s ease" });
-    const btn = { marginTop:8, padding:"10px 16px", borderRadius:10, border:"none", background:"#7c3aed", color:"white", fontSize:16, cursor:"pointer" };
+    const dot = (active) => ({ width:14, height:14, borderRadius:4, background: active ? "#0ac5e7ff" : "#e5defb", transition:"background .2s ease" });
+    const btn = { marginTop:8, padding:"10px 16px", borderRadius:10, border:"none", background:"#0ac5e7ff", color:"white", fontSize:16, cursor:"pointer" };
 
     // Si hay mismatch, mostrar solo el error
     if (mismatch) {

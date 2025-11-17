@@ -283,15 +283,15 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
           <table style={{ width:'100%', borderCollapse:'collapse', fontSize:14 }}>
             <thead>
               <tr>
-                <th style={{ textAlign:'left', borderBottom:'1px solid #eee', padding:'6px 4px' }}>Letra</th>
-                <th style={{ textAlign:'left', borderBottom:'1px solid #eee', padding:'6px 4px' }}>Coincidencia (%)</th>
+                <th style={{ textAlign:'center', borderBottom:'1px solid #eee', padding:'6px 4px' }}>Letra</th>
+                <th style={{ textAlign:'center', borderBottom:'1px solid #eee', padding:'6px 4px' }}>Coincidencia (%)</th>
               </tr>
             </thead>
             <tbody>
               {nameResults.map((r, i) => (
                 <tr key={i}>
-                  <td style={{ padding:'6px 4px', borderBottom:'1px solid #f4f4f4' }}>{r.expected}</td>
-                  <td style={{ padding:'6px 4px', borderBottom:'1px solid #f4f4f4' }}>{r.scoreTarget}%</td>
+                  <td style={{ textAlign:'center', padding:'6px 4px', borderBottom:'1px solid #f4f4f4' }}>{r.expected}</td>
+                  <td style={{ textAlign:'center', padding:'6px 4px', borderBottom:'1px solid #f4f4f4' }}>{r.scoreTarget}%</td>
                 </tr>
               ))}
             </tbody>
@@ -307,7 +307,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
                   restartRef.current();
                 }
               }}
-              style={{ padding:'10px 16px', borderRadius:10, border:'none', background:'#7c3aed', color:'#fff', cursor:'pointer' }}
+              style={{ padding:'10px 16px', borderRadius:10, border:'none', background:'#0ac5e7ff', color:'#fff', cursor:'pointer' }}
             >
               Repetir nombre
             </button>
