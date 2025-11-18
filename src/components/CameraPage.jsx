@@ -277,7 +277,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
           padding:24, boxShadow:'0 12px 40px rgba(0,0,0,.25)'
         }}>
           <h2 style={{ marginTop:0 }}>Resumen de tu nombre</h2>
-          <p style={{ margin:'8px 0 12px' }}>
+          <p style={{ textAlign:'center', margin:'8px 0 12px', background: 'linear-gradient(135deg, #98e179ff, #bfecac)', borderRadius:8 }}>
             Precisión promedio (letra objetivo): <strong>{avgTarget}%</strong>
           </p>
           <table style={{ width:'100%', borderCollapse:'collapse', fontSize:14 }}>
