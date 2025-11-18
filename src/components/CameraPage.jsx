@@ -267,6 +267,42 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
       ? Math.round(nameResults.reduce((s, r) => s + (r.scoreTarget || 0), 0) / nameResults.length)
       : 0;
 
+    let starsCount = 0; // Aseguramos que inicie en 0
+
+    if (avgTarget >= 96) {
+        starsCount = 5;
+    } else if (avgTarget >= 81) {
+        starsCount = 4;
+    } else if (avgTarget >= 61) {
+        starsCount = 3;
+    } else if (avgTarget >= 21) {
+        starsCount = 2;
+    } else if (avgTarget > 0) { 
+        starsCount = 1;
+    }
+
+    const StarRating = ({ count }) => {
+        const handIconSrc = "/assets/images/mano_evaluacion.png";
+
+        const hands = Array(5).fill(0).map((_, i) => (
+            <img 
+                key={i} 
+                src={handIconSrc} 
+                alt="Calificación" 
+                style={{
+                    width: '56px',   
+                    height: '78px',  
+                    margin: '0 5px', 
+                    cursor: 'default',
+                    filter: i < count 
+                        ? 'drop-shadow(0px 0px 4px rgba(255, 204, 0, 0.4)) brightness(1) sepia(0.8) hue-rotate(-30deg) saturate(350%)'
+                        : 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3)) brightness(0.8)',
+                }}
+            />
+        ));
+        return <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>{hands}</div>;
+    };
+
     return (
       <div style={{
         position:'fixed', inset:0, background:'rgba(0,0,0,0.45)',
@@ -277,6 +313,10 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
           padding:24, boxShadow:'0 12px 40px rgba(0,0,0,.25)'
         }}>
           <h2 style={{ marginTop:0 }}>Resumen de tu nombre</h2>
+
+          
+          <StarRating count={starsCount} />
+
           <p style={{ textAlign:'center', margin:'8px 0 12px', background: 'linear-gradient(135deg, #98e179ff, #bfecac)', borderRadius:8 }}>
             Precisión promedio (letra objetivo): <strong>{avgTarget}%</strong>
           </p>
