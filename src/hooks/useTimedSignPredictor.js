@@ -1,4 +1,3 @@
-// src/hooks/useTimedSignPredictor.js
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import * as tf from "@tensorflow/tfjs";
 
