@@ -17,10 +17,10 @@ body{
 
 header{
     display: flex;
-    justify-content: space-between; /* Usar space-between para separar el logo y el botón */
+    justify-content: space-between; 
     align-items: center;
-    height: 100px; /* Altura más razonable para un encabezado */
-    padding: 0 20px; /* Añadir padding para que el logo no toque los bordes */
+    height: 100px; 
+    padding: 0 20px; 
     gap: initial;
 }
 
@@ -44,37 +44,36 @@ header .regresar{
 }
 
 .camera-container {
-    /* Es probable que esta regla falte o no tenga efecto */
     height: 100vh; 
     display: flex;
-    flex-direction: column; /* Organiza el Header y el cam-cont verticalmente */
-    overflow: hidden; /* Esto ayuda a prevenir scrolls accidentales */
+    flex-direction: column; 
+    overflow: hidden; 
 }
 
 .camera-container p{
     text-align: center;
     background-color: #dca7f7;
     border-radius: 10px;
-    margin: 10px auto; /* Centrar y reducir margen horizontal */
-    padding: 10px; /* Reducir padding */
+    margin: 10px auto; 
+    padding: 10px; 
     color: #fff;
-    max-width: 90%; /* Asegura que no se desborde */
+    max-width: 90%; 
 }
 
 .camera-container h2{
     text-align: center;
     border-radius: 10px;
-    margin: 10px auto; /* Centrar horizontalmente, reducir el margen vertical */
-    padding: 10px; /* Reducir el padding de 20px a 10px para ahorrar espacio vertical */
+    margin: 10px auto; 
+    padding: 10px; 
     color: #0c0000;
-    font-size: 30px; /* Reducir el tamaño de fuente de 45px a 30px en pantallas pequeñas */
+    font-size: 30px; 
     max-width: 90%;
 }
 
 .cam-cont{
     display: flex;
     flex-grow: 1; 
-    gap: 10px; /* Reducir el gap de 20px a 10px para ganar espacio */
+    gap: 10px; 
     padding: 10px;
 }
 .column{
@@ -82,18 +81,16 @@ header .regresar{
     min-width: 0;
     display: flex;
     flex-direction: column;
-    flex: 1; /* Ocupa 50% del ancho */
+    flex: 1;
     min-height: 0;
 }
 
 .letter-image{
     width: auto; 
     height: auto;
-    
-    /* USA max-width/max-height para limitar el tamaño y asegurar el ajuste */
     max-width: 90%; 
-    max-height: 90%; /* Limita la altura para que quepa en el espacio */
-    margin-left: 0; /* Elimina este margen estático si quieres centrar */
+    max-height: 90%;
+    margin-left: 0;
     object-fit: contain;
 }
 

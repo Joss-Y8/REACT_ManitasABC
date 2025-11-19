@@ -265,7 +265,7 @@ export default function useTimedSignPredictor(options = {}) {
     };
   }, [clearTimers, predictFromLm, setHasHandSafe, setPhaseSafe, targetLetter, onFinalResult, isPaused]);
 
-  /* 🔥 actualiza refs que CameraPage espera (mover después de handleResults y restart) */
+  /* actualiza refs que CameraPage espera (mover después de handleResults y restart) */
   useEffect(() => {
     handleResultsRef.current = handleResults;
     restartRef.current = restart;
