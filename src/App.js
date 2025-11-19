@@ -6,9 +6,9 @@ import VowelsPage from './components/VowelsPage';
 import NamePage from './components/NamePage';
 import CameraPage from './components/CameraPage'; 
 
+
 function App() {
   const [currentPage, setCurrentPage] = useState('welcome');
-  const [currentTheme, setCurrentTheme] = useState('');
   const [userName, setUserName] = useState(''); 
   const [selectedLetter, setSelectedLetter] = useState('');
 
@@ -34,12 +34,11 @@ function App() {
     }
 
     if (currentPage === 'camera'){
-      return <CameraPage nameToDeleter={userName} selectedLetter={selectedLetter} onGoBack={()=>setCurrentPage('themes')}/>
+      return <CameraPage nameToDeleter={userName} selectedLetter={selectedLetter} onGoBack={()=>setCurrentPage('themes')} onCloseSummary={() => setCurrentPage('themes')}/>
     }
   };
 
   const handleSelectTheme = (theme) => {
-    setCurrentTheme(theme);
     setCurrentPage(theme); // Cambia a la página del tema seleccionado
   };
 

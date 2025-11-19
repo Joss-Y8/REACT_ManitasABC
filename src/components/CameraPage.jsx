@@ -6,10 +6,9 @@ import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { HAND_CONNECTIONS } from '@mediapipe/hands';
-
 import useTimedSignPredictor from '../hooks/useTimedSignPredictor';
 
-function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
+function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -62,23 +61,52 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
           setShowNameSummary(true);
         }
       }, 300);
+    } else {
+      const expected = targetForHook || '';
+      const scoreTarget = payload.targetScore || 0;
+      const scoreTop = payload.prob || 0;
+      const predicted = payload.label || '-';
+
+      setNameResults([{ expected, predicted, scoreTarget, scoreTop }]);
+      setShowNameSummary(true); 
     }
-    // Si no nos encontramos en modo nombre, el modal solo regresa a volver a intentar para el hook (ya no analizamos nada amigos)
   }, [isNameMode, nameIndex, lettersOfName.length, targetForHook]);
 
   //Almacenamos el handleResults del hook para pasarlo a MediaPipe
   const handleResultsRef = useRef(null);
 
-  const { Badge, ResultModal, handleResults, restart } = useTimedSignPredictor({
+  const { ResultModal, handleResults, restart, phase, elapsedRatio } = useTimedSignPredictor({
     targetLetter: targetForHook,
     onFinalResult,
   });
 
+  restartRef.current = restart;
+  handleResultsRef.current = handleResults;
+
+  useEffect(() => {
+    if (!targetForHook) return;
+    restart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetForHook]);
+
+  const TOTAL_TIME = 3;
+  const remainingTime = Math.ceil(TOTAL_TIME - TOTAL_TIME * elapsedRatio);
+
   // Actuaización de los ref cada que cambian las funciones
   useEffect(() => {
-    handleResultsRef.current = handleResults;
-    restartRef.current = restart;
-  }, [handleResults, restart]);
+    if (selectedLetter) {
+      setCurrentLetter(selectedLetter);
+     setLetterImageURL(`/assets/images/abecedario/${selectedLetter.toLowerCase()}.png`);
+    } else if (nameToDeleter) {
+      // En modo nombre, usa la letra actual según nameIndex
+      const L = (lettersOfName[nameIndex] || '').toUpperCase();
+      setCurrentLetter(L);
+      setLetterImageURL(L ? `/assets/images/abecedario/${L.toLowerCase()}.png` : '');
+    } else {
+       setCurrentLetter('');
+      setLetterImageURL('');
+    }
+  }, [nameToDeleter, selectedLetter, lettersOfName, nameIndex]);
 
   // Detener completamente la cámara
   const stopCamera = () => {
@@ -282,26 +310,45 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
     }
 
     const StarRating = ({ count }) => {
-        const handIconSrc = "/assets/images/mano_evaluacion.png";
+    const handIconSrc = "/assets/images/mano_evaluacion.png";
 
-        const hands = Array(5).fill(0).map((_, i) => (
-            <img 
-                key={i} 
-                src={handIconSrc} 
-                alt="Calificación" 
-                style={{
-                    width: '56px',   
-                    height: '78px',  
-                    margin: '0 5px', 
-                    cursor: 'default',
-                    filter: i < count 
-                        ? 'drop-shadow(0px 0px 4px rgba(255, 204, 0, 0.4)) brightness(1) sepia(0.8) hue-rotate(-30deg) saturate(350%)'
-                        : 'drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3)) brightness(0.8)',
-                }}
-            />
-        ));
-        return <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>{hands}</div>;
-    };
+    const hands = Array.from({ length: 5 }, (_, i) => {
+    const isActive = i < count;
+
+    return (
+      <img
+        key={i}
+        src={handIconSrc}
+        alt="Calificación"
+        style={{
+          width: "56px",
+          height: "78px",
+          margin: "0 6px",
+          cursor: "default",
+          transition: "transform 0.25s ease, filter 0.25s ease",
+          filter: isActive
+            ? `
+              brightness(1.35)
+              sepia(1)
+              saturate(400%)
+              hue-rotate(-30deg)
+              drop-shadow(0px 0px 6px rgba(255, 215, 0, 0.9))
+            `
+            : `
+              grayscale(70%)
+              brightness(0.85)
+            `
+        }}
+      />
+    );
+  });
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
+      {hands}
+    </div>
+  );
+};
 
     return (
       <div style={{
@@ -312,7 +359,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
           width:'min(620px,92vw)', background:'#fff', borderRadius:16,
           padding:24, boxShadow:'0 12px 40px rgba(0,0,0,.25)'
         }}>
-          <h2 style={{ marginTop:0 }}>Resumen de tu nombre</h2>
+          <h2 style={{ marginTop:0 }}>Resumen de {isNameMode ? "tu nombre" : "la letra"}</h2>
 
           
           <StarRating count={starsCount} />
@@ -342,18 +389,27 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
               onClick={() => { 
                 setShowNameSummary(false); 
                 setNameResults([]); 
-                setNameIndex(0); 
+                setNameIndex(0); // Reinicia el índice para el modo nombre
                 if (restartRef.current) {
-                  restartRef.current();
+                  restartRef.current(); // Reinicia el hook (para letra o nombre)
                 }
               }}
               style={{ padding:'10px 16px', borderRadius:10, border:'none', background:'#0ac5e7ff', color:'#fff', cursor:'pointer' }}
             >
-              Repetir nombre
+              {isNameMode ? "Repetir nombre" : "Volver a intentar"} 
             </button>
             <button
-              onClick={() => { setShowNameSummary(false); }}
-              style={{ padding:'10px 16px', borderRadius:10, border:'1px solid #ddd', background:'#fff', cursor:'pointer' }}
+              onClick={() => {
+                setShowNameSummary(false);
+                onCloseSummary();  // Cierra el modal y vuelve a la página de temas/letras
+              }}
+              style={{
+                padding:'10px 16px',
+                borderRadius:10,
+                border:'1px solid #ddd',
+                background:'#fff',
+                cursor:'pointer'
+              }}
             >
               Cerrar
             </button>
@@ -385,12 +441,33 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
           )}
         </div>
 
-        <div className="column">
+        <div className="column" style={{ position: 'relative' }}>
           {isCameraOn ? <p>Cámara activada. ¡Muestra la seña!</p> : <p>Activando la cámara...</p>}
+
+            <div style={{ 
+              marginBottom: '10px', 
+              padding: '8px', 
+              backgroundColor: '#fffbe5', 
+              border: '1px solid #ffe58f', 
+              borderRadius: '8px',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              color: '#614700'
+            }}>
+            Solo muestra tu mano en el recuadro de la cámara 🖐️
+          </div>
 
           {/* En modo nombre NO mostramos el ResultModal por intento */}
           {!isNameMode && <ResultModal />}
           <NameSummaryModal /> {/* Solo aparece al terminar el nombre */}
+
+            { phase === "countdown" && (
+                <TimerRing 
+                  ratio={elapsedRatio}
+                  remainingTime={remainingTime}
+                  phase={phase}
+                />
+            )}
 
           {/* Video oculto (solo fuente para MediaPipe) */}
           <video
@@ -409,5 +486,65 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack }) {
     </div>
   );
 }
+
+const TimerRing = ({ ratio, remainingTime, phase }) => {
+    if (phase !== "countdown") return null;
+
+    const circumference = 2 * Math.PI * 50;
+    const strokeDashoffset = circumference * (1 - ratio);
+    const progressColor = "#0ac5e7ff";
+
+    return (
+        <svg
+            width="180"
+            height="180"
+            viewBox="0 0 120 120"
+            style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%) scale(1.8)",
+                zIndex: 50,
+            }}
+        >
+            <circle
+                cx="60"
+                cy="60"
+                r="50"
+                fill="transparent"
+                stroke="#E0E0E0"
+                strokeWidth="8"
+            />
+
+            <circle
+                cx="60"
+                cy="60"
+                r="50"
+                fill="transparent"
+                stroke={progressColor}
+                strokeWidth="8"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                style={{
+                    transition: "stroke-dashoffset 0.05s linear",
+                    transform: "rotate(-90deg)",
+                    transformOrigin: "50% 50%",
+                }}
+            />
+
+            <text
+                x="60"
+                y="72"
+                textAnchor="middle"
+                fontSize="42"
+                fill="#333"
+                fontWeight="900"
+            >
+                {remainingTime}
+            </text>
+        </svg>
+    );
+  };
 
 export default CameraPage;

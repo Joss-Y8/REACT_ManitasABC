@@ -17,14 +17,15 @@ body{
 
 header{
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* Usar space-between para separar el logo y el botón */
     align-items: center;
-    height: 190px;
-    gap: 60%;
+    height: 100px; /* Altura más razonable para un encabezado */
+    padding: 0 20px; /* Añadir padding para que el logo no toque los bordes */
+    gap: initial;
 }
 
-header .logo{
-    width: 350px;
+header .logo {
+    width: 250px; 
 }
 
 header .regresar{
@@ -42,45 +43,68 @@ header .regresar{
     border-radius: 15px;
 }
 
+.camera-container {
+    /* Es probable que esta regla falte o no tenga efecto */
+    height: 100vh; 
+    display: flex;
+    flex-direction: column; /* Organiza el Header y el cam-cont verticalmente */
+    overflow: hidden; /* Esto ayuda a prevenir scrolls accidentales */
+}
+
 .camera-container p{
     text-align: center;
     background-color: #dca7f7;
     border-radius: 10px;
-    margin: 10px 70px;
-    padding: 20px;
+    margin: 10px auto; /* Centrar y reducir margen horizontal */
+    padding: 10px; /* Reducir padding */
     color: #fff;
+    max-width: 90%; /* Asegura que no se desborde */
 }
 
 .camera-container h2{
     text-align: center;
     border-radius: 10px;
-    margin: 10px 70px;
-    padding: 20px;
+    margin: 10px auto; /* Centrar horizontalmente, reducir el margen vertical */
+    padding: 10px; /* Reducir el padding de 20px a 10px para ahorrar espacio vertical */
     color: #0c0000;
-    font-size: 45px;
-
+    font-size: 30px; /* Reducir el tamaño de fuente de 45px a 30px en pantallas pequeñas */
+    max-width: 90%;
 }
 
 .cam-cont{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-
+    display: flex;
+    flex-grow: 1; 
+    gap: 10px; /* Reducir el gap de 20px a 10px para ganar espacio */
+    padding: 10px;
 }
 .column{
+    flex: 1; 
+    min-width: 0;
     display: flex;
     flex-direction: column;
+    flex: 1; /* Ocupa 50% del ancho */
+    min-height: 0;
 }
 
 .letter-image{
-    width: 600px;
-    height: 700px;
-    margin-left: 200px;
+    width: auto; 
+    height: auto;
+    
+    /* USA max-width/max-height para limitar el tamaño y asegurar el ajuste */
+    max-width: 90%; 
+    max-height: 90%; /* Limita la altura para que quepa en el espacio */
+    margin-left: 0; /* Elimina este margen estático si quieres centrar */
+    object-fit: contain;
 }
 
-/*.image-container{
-    height: 0px;
-}*/
+.image-container{
+    flex-grow: 1; 
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    padding: 10px 0;
+}
+
 .camera-feed {
     justify-content: center;
     align-items: center;

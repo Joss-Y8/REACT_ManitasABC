@@ -34,12 +34,13 @@ function preprocessLandmarks(lm21) {
 
 /**
  * useTimedSignPredictor({ targetLetter?, onFinalResult? })
- * - targetLetter: letra objetivo para comparar y mostrar aviso
- * - onFinalResult(payload): callback al cerrar ventana de análisis
  */
 export default function useTimedSignPredictor(options = {}) {
   const targetLetter = options.targetLetter || null;
   const onFinalResult = options.onFinalResult || null;
+
+  const handleResultsRef = useRef(null);
+  const restartRef = useRef(() => {});
 
   const modelRef = useRef(null);
   const labelsRef = useRef([]);
@@ -51,6 +52,7 @@ export default function useTimedSignPredictor(options = {}) {
   const lastInferTsRef = useRef(0);
   const timerIntervalRef = useRef(null);
   const timerTimeoutRef = useRef(null);
+  const startTimeRef = useRef(0);
 
   const sumRef = useRef(null);
   const countRef = useRef(0);
@@ -64,12 +66,15 @@ export default function useTimedSignPredictor(options = {}) {
   const [hasHand, setHasHand] = useState(false);
   const [pred, setPred] = useState({ label: "-", prob: 0, all: [], targetScore: 0 });
   const [isPaused, setIsPaused] = useState(false);
+  const [elapsedRatio, setElapsedRatio] = useState(0);
 
   const setPhaseSafe = useCallback((p) => { phaseRef.current = p; setPhase(p); }, []);
   const setReadySafe = useCallback((r) => { readyRef.current = r; setReady(r); }, []);
   const setHasHandSafe = useCallback((h) => setHasHand(h), []);
 
-  /* cargar modelo/labels (+ scaler opcional) */
+  /* ---------------------------
+     CARGA MODELO + LABELS + SCALER
+     --------------------------- */
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -91,7 +96,9 @@ export default function useTimedSignPredictor(options = {}) {
             meanRef.current = Float32Array.from(mean);
             scaleRef.current = Float32Array.from(scale);
           }
-        } catch {}
+        } catch (e) {
+          // scaler opcional
+        }
 
         setReadySafe(true);
       } catch (e) {
@@ -131,14 +138,15 @@ export default function useTimedSignPredictor(options = {}) {
     stableHitsRef.current = 0; lastWinnerRef.current = null;
     setPred({ label: "-", prob: 0, all: [], targetScore: 0 });
     setCountdown(0);
+    setElapsedRatio(0);
+    startTimeRef.current = 0;
     setPhaseSafe("idle");
     setIsPaused(false);
   }, [clearTimers, setPhaseSafe]);
 
   const handleResults = useMemo(() => {
     return (results) => {
-      // Si está pausado (modal abierto), ignorar detección
-      if (isPaused) {
+      if (phaseRef.current === "done") {
         setHasHandSafe(false);
         return;
       }
@@ -157,15 +165,25 @@ export default function useTimedSignPredictor(options = {}) {
           sumRef.current = null; countRef.current = 0; lastInferTsRef.current = 0;
           stableHitsRef.current = 0; lastWinnerRef.current = null;
 
+          // countdown interval (1s)
           timerIntervalRef.current = setInterval(() => {
             setCountdown((prev) => {
               const next = prev - 1;
+              // **actualizamos elapsedRatio DURANTE countdown** -> valor entre 0..1
+              // cuando next = prev-1 ; we want fraction of progress done
+              const done = COUNTDOWN_SEC - Math.max(next, 0);
+              setElapsedRatio(done / COUNTDOWN_SEC);
+
               if (next <= 0) {
                 clearTimers();
                 setPhaseSafe("analyzing");
                 sumRef.current = null; countRef.current = 0; lastInferTsRef.current = 0;
                 stableHitsRef.current = 0; lastWinnerRef.current = null;
 
+                startTimeRef.current = performance.now();
+                setElapsedRatio(0); // resetting to 0 for analyzing progress
+
+                // tiempo para recolectar ventanas de inferencia
                 timerTimeoutRef.current = setTimeout(() => {
                   if (sumRef.current && countRef.current > 0) {
                     const avg = sumRef.current.map((v) => v / countRef.current);
@@ -199,9 +217,11 @@ export default function useTimedSignPredictor(options = {}) {
 
                     setPred(payload);
                     setPhaseSafe("done");
-                    setIsPaused(true); // Pausar detección cuando se muestra resultado
-                    try { onFinalResult && onFinalResult(payload); } catch {}
+                    setIsPaused(true);
 
+                    setTimeout(() => {
+                      try { onFinalResult && onFinalResult(payload); } catch {}
+                    }, 100);
                   } else {
                     setPhaseSafe("idle");
                   }
@@ -223,7 +243,7 @@ export default function useTimedSignPredictor(options = {}) {
               if (!sumRef.current) sumRef.current = Array.from(probs);
               else for (let i = 0; i < probs.length; i++) sumRef.current[i] += probs[i];
               countRef.current += 1;
-              // estabilidad
+
               let maxIdx = 0, maxVal = probs[0];
               for (let i = 1; i < probs.length; i++) if (probs[i] > maxVal) { maxVal = probs[i]; maxIdx = i; }
               if (maxVal >= MIN_CONF) {
@@ -245,25 +265,48 @@ export default function useTimedSignPredictor(options = {}) {
     };
   }, [clearTimers, predictFromLm, setHasHandSafe, setPhaseSafe, targetLetter, onFinalResult, isPaused]);
 
+  /* 🔥 actualiza refs que CameraPage espera (mover después de handleResults y restart) */
+  useEffect(() => {
+    handleResultsRef.current = handleResults;
+    restartRef.current = restart;
+  }, [handleResults, restart]);
+
+  /* ---------------------------
+     Animación progresiva: elapsedRatio mientras se analiza
+     - Este RAF loop solo escribe elapsedRatio DURANTE la fase 'analyzing'.
+     - No toca elapsedRatio en otras fases (así no pisa el countdown).
+     --------------------------- */
+  useEffect(() => {
+    let animId = null;
+    const updateProgress = () => {
+      if (phaseRef.current === "analyzing") {
+        const elapsed = performance.now() - startTimeRef.current;
+        const ratio = Math.min(1.0, elapsed / WINDOW_MS);
+        setElapsedRatio(ratio);
+      }
+      animId = requestAnimationFrame(updateProgress);
+    };
+    animId = requestAnimationFrame(updateProgress);
+    return () => { if (animId) cancelAnimationFrame(animId); };
+  }, []); // <-- vacío: loop lee phaseRef.current internamente
+
   const ResultModal = useCallback(() => {
     if (phase !== "done") return null;
-    const points = Math.max(0, Math.min(100, pred.prob || 0)); // 0..100
+    //const points = Math.max(0, Math.min(100, pred.prob || 0));
     const mismatch = targetLetter && pred.label !== "Desconocido" &&
                      pred.label?.toLowerCase() !== targetLetter?.toLowerCase();
 
     const overlay = { position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:16 };
     const modal = { width:"min(560px,92vw)", background:"white", borderRadius:16, boxShadow:"0 12px 40px rgba(0,0,0,.25)", padding:24, textAlign:"center" };
     const headline = { fontSize:28, margin:"8px 0 4px" };
-    const bigScore = { fontSize:56, margin:"0 0 12px", lineHeight:1.1 };
+    //const bigScore = { fontSize:56, margin:"0 0 12px", lineHeight:1.1 };
     const sub = { color:"#555", marginBottom:12 };
-    const warn = { background:"#FFF3CD", border:"1px solid #FFECB5", color:"#664D03", padding:"10px 12px", borderRadius:10, marginBottom:12, fontWeight:600 };
     const errorBox = { background: 'linear-gradient(135deg, #ffe871, #fff2b2ff)', border:"2px solid #ffe871", color:"#ff6600ff", padding:"20px 16px", borderRadius:12, marginBottom:16, fontWeight:600, fontSize:18 };
 
-    const dotsWrap = { margin:"14px auto 18px", display:"grid", gridTemplateColumns:"repeat(20,1fr)", gap:6, width:"min(520px,90vw)" };
-    const dot = (active) => ({ width:14, height:14, borderRadius:4, background: active ? "#0ac5e7ff" : "#e5defb", transition:"background .2s ease" });
+    //const dotsWrap = { margin:"14px auto 18px", display:"grid", gridTemplateColumns:"repeat(20,1fr)", gap:6, width:"min(520px,90vw)" };
+    //const dot = (active) => ({ width:14, height:14, borderRadius:4, background: active ? "#0ac5e7ff" : "#e5defb", transition:"background .2s ease" });
     const btn = { marginTop:8, padding:"10px 16px", borderRadius:10, border:"none", background:"#0ac5e7ff", color:"white", fontSize:16, cursor:"pointer" };
 
-    // Si hay mismatch, mostrar solo el error
     if (mismatch) {
       return (
         <div style={overlay} role="dialog" aria-modal="true">
@@ -280,32 +323,6 @@ export default function useTimedSignPredictor(options = {}) {
         </div>
       );
     }
-
-    // Si es correcto o sin letra objetivo, mostrar resultado completo
-    return (
-      <div style={overlay} role="dialog" aria-modal="true">
-        <div style={modal}>
-          <div style={headline}>Resultado</div>
-          <div style={bigScore}>{points} / 100</div>
-          <div style={sub}>
-            Seña detectada: <strong>{pred.label}</strong>
-            {targetLetter && <> &nbsp;|&nbsp; Objetivo: <strong>{targetLetter}</strong></>}
-          </div>
-
-          {targetLetter && (
-            <div style={{ marginBottom: 8 }}>
-              Coincidencia con <strong>{targetLetter}</strong>: <strong>{pred.targetScore}%</strong>
-            </div>
-          )}
-
-          <div style={dotsWrap}>
-            {Array.from({ length: 100 }).map((_, i) => <div key={i} style={dot(i < points)} />)}
-          </div>
-
-          <button style={btn} onClick={restart}>Volver a intentar</button>
-        </div>
-      </div>
-    );
   }, [phase, pred, restart, targetLetter]);
 
   const Badge = useCallback(() => {
@@ -319,5 +336,5 @@ export default function useTimedSignPredictor(options = {}) {
     );
   }, [ready, hasHand, phase, countdown]);
 
-  return { Badge, ResultModal, handleResults, pred, phase, ready, restart };
+  return { Badge, ResultModal, handleResults, pred, phase, ready, restart, elapsedRatio, TIME_LIMIT_MS: WINDOW_MS };
 }
