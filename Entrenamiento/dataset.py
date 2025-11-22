@@ -4,7 +4,7 @@ import mediapipe as mp
 from collections import defaultdict
 
 # === CONFIG ===
-DATA_DIR = r"D:\Manitas\REACT_ManitasABC\public\assets\images\manos"
+DATA_DIR = r"C:\Users\blanf\OneDrive\Documentos\Respaldo\Manitas\REACT_ManitasABC\public\assets\images\manos"
 CLASSES = ["a","e","i","m","o","r","u"]
 VALID_EXTS = (".jpg",".jpeg",".png",".bmp",".webp")
 
