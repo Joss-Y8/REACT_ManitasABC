@@ -21,3 +21,24 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# --- Python / venv ---
+venv/
+venv-*/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Training artifacts (opcional si NO quieres subirlos) ---
+*.npy
+*.h5
+*.keras
+*.joblib
+skipped.json
+
+# --- Logs / notebooks ---
+*.log
+.ipynb_checkpoints/
