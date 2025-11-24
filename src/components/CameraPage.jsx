@@ -480,7 +480,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
           />
 
           {/* Canvas donde se dibuja la mano */}
-          <canvas ref={canvasRef} className="camera-feed" width="640" height="480" />
+          <canvas ref={canvasRef} className="camera-feed" width="640" height="400" />
         </div>
       </div>
     </div>
