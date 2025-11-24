@@ -40,6 +40,12 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
   // Callback cuando el hook termina un intento de análisis
   const onFinalResult = useCallback((payload) => {
     // payload: { label, prob, all, targetScore, targetLetter, isMatch }
+
+    if (!isNameMode && payload && payload.isMatch === false) {
+      return;
+    }
+
+    //Modo nombre 
     if (isNameMode) {
       const expected = targetForHook || '';
       const predicted = payload.label || '-';
@@ -48,12 +54,12 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
 
       setNameResults(prev => [...prev, { expected, predicted, scoreTarget, scoreTop }]);
 
-      //Pasamos a la siguiente letra, con breves retrasos para no analizar la letra pasada otra vez (importante, no le muevan)
+      // Pasamos a la siguiente letra después de un pequeño delay
       setTimeout(() => {
         const next = nameIndex + 1;
         if (next < lettersOfName.length) {
           setNameIndex(next);
-          // Reiniciamos el hook para el siguiente intento
+
           if (restartRef.current) {
             restartRef.current();
           }
@@ -61,16 +67,21 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
           setShowNameSummary(true);
         }
       }, 300);
-    } else {
-      const expected = targetForHook || '';
-      const scoreTarget = payload.targetScore || 0;
-      const scoreTop = payload.prob || 0;
-      const predicted = payload.label || '-';
 
-      setNameResults([{ expected, predicted, scoreTarget, scoreTop }]);
-      setShowNameSummary(true); 
+      return;
     }
+
+    // Modo letra
+    const expected = targetForHook || '';
+    const scoreTarget = payload.targetScore || 0;
+    const scoreTop = payload.prob || 0;
+    const predicted = payload.label || '-';
+
+    setNameResults([{ expected, predicted, scoreTarget, scoreTop }]);
+    setShowNameSummary(true);
+
   }, [isNameMode, nameIndex, lettersOfName.length, targetForHook]);
+
 
   //Almacenamos el handleResults del hook para pasarlo a MediaPipe
   const handleResultsRef = useRef(null);
@@ -111,7 +122,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
   // Detener completamente la cámara
   const stopCamera = () => {
     console.log("Deteniendo camara");
-
+    
     // detener el stream de la cámara
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
@@ -241,6 +252,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
     // limpiar al desmontar
     return () => {
       isMounted = false;
+      stopCamera(); 
 
       if (hands) {
         try {
@@ -283,7 +295,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
   }, [nameToDeleter, selectedLetter, lettersOfName, nameIndex]);
 
   const handleBack = () => {
-    stopCamera();
+    //stopCamera();
     onGoBack();
     console.log('Regresar clickeado');
   };
@@ -296,12 +308,12 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
       : 0;
 
     let starsCount = 0; // Aseguramos que inicie en 0
-
-    if (avgTarget >= 96) {
+    //Tomamos intervalos de 20 para asignar las estrellas 
+    if (avgTarget >= 81) {
         starsCount = 5;
-    } else if (avgTarget >= 81) {
-        starsCount = 4;
     } else if (avgTarget >= 61) {
+        starsCount = 4;
+    } else if (avgTarget >= 41) {
         starsCount = 3;
     } else if (avgTarget >= 21) {
         starsCount = 2;
@@ -365,7 +377,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
           <StarRating count={starsCount} />
 
           <p style={{ textAlign:'center', margin:'8px 0 12px', background: 'linear-gradient(135deg, #98e179ff, #bfecac)', borderRadius:8 }}>
-            Precisión promedio (letra objetivo): <strong>{avgTarget}%</strong>
+            Precisión promedio para {currentLetter}: <strong>{avgTarget}%</strong>
           </p>
           <table style={{ width:'100%', borderCollapse:'collapse', fontSize:14 }}>
             <thead>
@@ -400,6 +412,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
             </button>
             <button
               onClick={() => {
+                stopCamera();
                 setShowNameSummary(false);
                 onCloseSummary();  // Cierra el modal y vuelve a la página de temas/letras
               }}
@@ -480,7 +493,7 @@ function CameraPage({ nameToDeleter, selectedLetter, onGoBack, onCloseSummary })
           />
 
           {/* Canvas donde se dibuja la mano */}
-          <canvas ref={canvasRef} className="camera-feed" width="640" height="480" />
+          <canvas ref={canvasRef} className="camera-feed" width="640" height="400" />
         </div>
       </div>
     </div>
