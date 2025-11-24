@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import * as tf from "@tensorflow/tfjs";
 
 /* --- parámetros --- */
-const MIN_CONF = 0.65;
-const STABLE_N = 5;
+const MIN_CONF = 0.55;
+const STABLE_N = 4;
 const COUNTDOWN_SEC = 3;
 const WINDOW_MS = 2000;
 const INFER_EVERY_MS = 100;
