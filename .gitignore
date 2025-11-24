@@ -22,14 +22,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-<<<<<<< HEAD
 
 # --- Python virtual envs ---
 .venv/
 .venv_convert/
 .venv_mp/
 .venv_tf/
-=======
 # Entornos locales
 .tfjsenv/
 .env
@@ -41,4 +39,3 @@ node_modules/
 __pycache__/
 .DS_Store
 
->>>>>>> origin/Joss
